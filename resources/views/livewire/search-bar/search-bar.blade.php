@@ -62,7 +62,7 @@
                                     @if ($columnName)
                                         <th scope="col"
                                             class="py-3.5 px-4 text-sm font-normal
-                                            {{ ($columnName == "Opções" ? 'text-center':'text-left') }}
+                                            text-center
                                                     text-gray-500 dark:text-gray-400">
                                             {{ $columnName }}
                                         </th>
@@ -73,7 +73,7 @@
                         <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
                             @if ($dataTable->isEmpty())
                                 <tr>
-                                    <td colspan="{{ count($columnsNames) }}" class="py-1.5 px-4 text-sm font-normal text-left text-gray-500 dark:text-gray-400">
+                                    <td colspan="{{ count($columnsNames) }}" class="py-1.5 px-4 text-sm font-normal  text-center text-gray-500 dark:text-gray-400">
                                         Nenhum resultado encontrado.
                                     </td>
                                 </tr>
@@ -85,18 +85,18 @@
                                     <tr>
                                         @foreach (array_map(null, $data->toArray(), $columnsNames) as [$value, $columnName])
                                             @if (\Carbon\Carbon::hasFormat($value, 'Y-m-d H:i:s'))
-                                                <td class="py-1.5 px-4 text-sm font-normal text-left text-gray-500 dark:text-gray-400">
+                                                <td class="py-1.5 px-4 text-sm font-normal  text-center text-gray-500 dark:text-gray-400">
                                                     {{ \Carbon\Carbon::parse($value)->format('d/m/Y H:i:s') }}
                                                 </td>
                                             @elseif ($columnName)
-                                                <td class="py-1.5 px-4 text-sm font-normal text-left text-gray-500 dark:text-gray-400">
+                                                <td class="py-1.5 px-4 text-sm font-normal  text-center text-gray-500 dark:text-gray-400">
                                                     {{ $value }}
                                                 </td>
                                             @endif
                                         @endforeach
                                         @if ($showButtons)
-                                            <td class="py-1.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
-                                                <x-table-buttons-modals :id="$data->id" />
+                                            <td class="py-1.5 px-4 text-sm font-normal  text-center text-gray-500 dark:text-gray-400">
+                                                @livewire('search-bar.actions-buttons', ['search_id' => $data->id],key($data->id))
                                             </td>
                                         @endif
                                     </tr>
