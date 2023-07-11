@@ -15,6 +15,7 @@ class SearchBar extends Component
     public $search;
     public $searchDate;
     public $model;
+    public $modelId;
     public $relationTables;
     public $sort;
     public $columnsInclude;
@@ -34,6 +35,7 @@ class SearchBar extends Component
 
     public function mount(
                         $model,
+                        $modelId,
                         $relationTables,
                         $paginate,
                         $sort,
@@ -45,8 +47,14 @@ class SearchBar extends Component
                     )
     {
         $this->model = $model;
-        $this->relationTables = explode(',', $relationTables);
-        $this->sort = $sort;
+        $this->modelId = $modelId;
+        if(isset($relationTables)){
+            $this->relationTables = $relationTables;
+        }
+        if(isset($sort)){
+            $this->sort = $sort;
+        }
+
         $this->columnsInclude = $columnsInclude;
         $this->columnsNames = explode(',', $columnsNames);
         $this->searchable = $searchable;
@@ -69,14 +77,14 @@ class SearchBar extends Component
     private function getData()
     {
         $query = $this->model::query();
-        if ($this->relationTables[0] != "") {
-            for ($i = 0; $i < count($this->relationTables); $i += 3) {
-                $query->leftJoin($this->relationTables[$i], $this->relationTables[$i + 1], '=', $this->relationTables[$i + 2]);
-            }
+        $query->select(explode(',', $this->columnsInclude),$this->modelId);
+
+        if($this->relationTables != ""){
+            $query = $this->relationTables($query);
         }
-        $sortData = explode('|', $this->sort);
-        $query->orderBy($sortData[0], $sortData[1]);
-        $query->select(explode(',', $this->columnsInclude));
+        if($this->sort != ""){
+            $query = $this->sort($query);
+        }
 
         if ($this->searchable && $this->search) {
             $searchTerms = explode(',', $this->searchable);
@@ -119,36 +127,67 @@ class SearchBar extends Component
 
         return $query->paginate($this->paginate);
     }
-
-    //CREATE
-    public function showModalCreate()
-    {
-        $this->emitUp('showModalCreate');
-    }
-    //READ
-    public function showModalRead($id)
-    {
-        $this->emitUp('showModalRead', $id);
-    }
-    //UPDATE
-    public function showModalUpdate($id)
-    {
-        $this->emitUp('showModalUpdate', $id);
-    }
-    //DELETE
-    public function showModalDelete($id)
-    {
-        $this->emitUp('showModalDelete', $id);
-    }
-    //OPEN MESSAGE
-    public function openAlert($status, $msg)
-    {
-        session()->flash($status, $msg);
-        $this->alertSession = true;
-    }
-    //CLOSE MESSAGE
-    public function closeAlert()
-    {
-        $this->alertSession = false;
-    }
+    #EXTRA FUNCTIONS
+        //SORT
+        public function sort($query)
+        {
+            $this->sort = str_replace(' ', '', $this->sort);
+            $sortData = explode('|', $this->sort);
+            $c = count($sortData);
+            for ($i=0; $i < $c; $i++) {
+                $s = explode(',', $sortData[$i]);
+                if (count($s) === 2) {
+                    $query->orderBy($s[0], $s[1]);
+                }
+            }
+            return $query;
+        }
+        //RELATIONSHIPS
+        public function relationTables($query)
+        {
+            $this->relationTables = str_replace(' ', '', $this->relationTables);
+                $relationTables = explode('|', $this->relationTables);
+                $crt = count($relationTables);
+                for ($i=0; $i < $crt; $i++) {
+                    $rt = explode(',', $relationTables[$i]);
+                    if (count($rt) === 3) {
+                        $query->leftJoin($rt[0], $rt[1], '=', $rt[2]);
+                    }
+                }
+                return $query;
+        }
+    #END EXTRA FUNCTIONS
+    #FUNCTIONS BUTTONS AND MESSAGE
+        //CREATE
+        public function showModalCreate()
+        {
+            $this->emitUp('showModalCreate');
+        }
+        //READ
+        public function showModalRead($id)
+        {
+            $this->emitUp('showModalRead', $id);
+        }
+        //UPDATE
+        public function showModalUpdate($id)
+        {
+            $this->emitUp('showModalUpdate', $id);
+        }
+        //DELETE
+        public function showModalDelete($id)
+        {
+            $this->emitUp('showModalDelete', $id);
+        }
+        //OPEN MESSAGE
+        public function openAlert($status, $msg)
+        {
+            session()->flash($status, $msg);
+            $this->alertSession = true;
+        }
+        //CLOSE MESSAGE
+        public function closeAlert()
+        {
+            $this->alertSession = false;
+        }
+    #END FUNCTIONS BUTTONS AND MESSAGE
 }
