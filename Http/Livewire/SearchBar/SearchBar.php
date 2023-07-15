@@ -9,7 +9,6 @@ use Livewire\WithPagination;
 
 class SearchBar extends Component
 {
-
     use WithPagination;
 
     public $search;
@@ -18,10 +17,10 @@ class SearchBar extends Component
     public $modelId;
     public $relationTables;
     public $sort;
+    public $searchable;
     public $columnsInclude;
     public $columnsNames;
-    public $searchable;
-    public $searchableDates;
+    public $customSearch;
     public $showButtons;
 
     public $paginate;
@@ -42,7 +41,7 @@ class SearchBar extends Component
                         $columnsInclude,
                         $columnsNames,
                         $searchable,
-                        $searchableDates,
+                        $customSearch,
                         $showButtons
                     )
     {
@@ -58,7 +57,7 @@ class SearchBar extends Component
         $this->columnsInclude = $columnsInclude;
         $this->columnsNames = explode(',', $columnsNames);
         $this->searchable = $searchable;
-        $this->searchableDates = $searchableDates;
+        $this->customSearch = $customSearch;
         $this->showButtons = $showButtons;
         ($paginate != null ? $this->paginate = $paginate : $this->paginate = 10);
 
@@ -87,45 +86,26 @@ class SearchBar extends Component
         }
 
         if ($this->searchable && $this->search) {
-            $searchTerms = explode(',', $this->searchable);
-            $query->where(function ($innerQuery) use ($searchTerms) {
-                if ($this->searchableDates) {
-                    if (substr_count($this->search, " ") === 1) {
-                        $partesSpace = explode(" ", $this->search);
-                        if (substr_count($partesSpace[0], "/") === 1) {
-                            $partes = explode("/", $partesSpace[0]);
-                            $this->searchDate = $partes[1] . "%-" . $partes[0] . "% " . $partesSpace[1];
-                        } elseif (substr_count($partesSpace[0], "/") === 2) {
-                            $partes = explode("/", $partesSpace[0]);
-                            $this->searchDate = $partes[2] . "%-" . $partes[1] . "-" . $partes[0] . "% " . $partesSpace[1];
-                        } else {
-                            $this->searchDate = $this->search;
-                        }
-                    } else {
-                        if (substr_count($this->search, "/") === 1) {
-                            $partes = explode("/", $this->search);
-                            $this->searchDate = $partes[1] . "%-" . $partes[0];
-                        } elseif (substr_count($this->search, "/") === 2) {
-                            $partes = explode("/", $this->search);
-                            $this->searchDate = $partes[2] . "%-" . $partes[1] . "-" . $partes[0];
-                        } else {
-                            $this->searchDate = $this->search;
-                        }
-                    }
+            $this->search($query);
+        }
 
-                    $searchDates = explode(',', $this->searchableDates);
-                    foreach ($searchDates as $termDates) {
-                        $formattedSearch = '%' . $this->searchDate . '%';
-                        $innerQuery->orWhere($termDates, 'LIKE', $formattedSearch);
+        return $query->paginate($this->paginate);
+    }
+    #PRICIPAL FUNCTIONS
+    public function search($query){
+        $searchTerms = explode(',', $this->searchable);
+            $query->where(function ($innerQuery) use ($searchTerms) {
+                if ($this->customSearch) {
+                    $fields = explode('|', $this->customSearch);
+                    foreach ($fields as $field) {
+                        $search = array($field=>$this->search);
+                        $innerQuery->filterFields($search);
                     }
                 }
                 foreach ($searchTerms as $term) {
                     $innerQuery->orWhere($term, 'like', '%' . $this->search . '%');
                 }
             });
-        }
-
-        return $query->paginate($this->paginate);
     }
     #EXTRA FUNCTIONS
         //SORT
