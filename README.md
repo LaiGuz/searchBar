@@ -1,7 +1,7 @@
 # searchBar
 Barra de pesquisa
 
-#Componente de configuração
+## Componente de configuração
     <div class="bg-white shadow-md dark:bg-gray-800 pt-3 sm:rounded-lg">
         <livewire:search-bar.search-bar
             {{-- REQUIRED --}}  model="App\Models\Model\Times" {{-- Model principal --}}
