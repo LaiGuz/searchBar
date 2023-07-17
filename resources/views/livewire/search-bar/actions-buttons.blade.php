@@ -1,6 +1,6 @@
 <div class="w-full">
     <div class="flex justify-between font-medium duration-200 ">
-        <div class="tooltip tooltip-bottom p-0" data-tip="Editar">
+        <div class="tooltip tooltip-top p-0" data-tip="Editar">
             <button wire:click="showModalUpdate({{ $search_id }})"
                 class="py-2 px-3
             hover:text-white dark:hover:bg-blue-500 transition-colors hover:hover:bg-blue-500
@@ -13,7 +13,7 @@
                 </svg>
             </button>
         </div>
-        <div class="tooltip tooltip-bottom p-0" data-tip="Apagar">
+        <div class="tooltip tooltip-top p-0" data-tip="Apagar">
             <button wire:click="showModalDelete({{ $search_id }})"
                 class="py-2 px-3
                 transition-colors dark:hover:bg-red-500 hover:hover:bg-red-500
@@ -26,7 +26,7 @@
                 </svg>
             </button>
         </div>
-        <div class="tooltip tooltip-bottom p-0" data-tip="Ver">
+        <div class="tooltip tooltip-top p-0" data-tip="Ver">
             <button wire:click="showModalRead({{ $search_id }})"
                 class="py-2 px-3 transition-colors
             dark:hover:bg-teal-500 hover:hover:bg-teal-500
