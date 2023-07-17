@@ -15,6 +15,7 @@ class SearchBar extends Component
     public $searchDate;
     public $model;
     public $modelId;
+    public $showId;
     public $relationTables;
     public $sort;
     public $searchable;
@@ -35,6 +36,7 @@ class SearchBar extends Component
     public function mount(
                         $model,
                         $modelId,
+                        $showId,
                         $relationTables,
                         $paginate,
                         $sort,
@@ -47,6 +49,7 @@ class SearchBar extends Component
     {
         $this->model = $model;
         $this->modelId = $modelId;
+        $this->showId = strtolower(trim($showId));
         if(isset($relationTables)){
             $this->relationTables = $relationTables;
         }
@@ -75,8 +78,17 @@ class SearchBar extends Component
 
     private function getData()
     {
+
         $query = $this->model::query();
-        $query->select(explode(',', $this->columnsInclude),$this->modelId);
+        $selects = array($this->modelId.' as id');
+        if($this->columnsInclude){
+            foreach (explode(',', $this->columnsInclude) as $key => $value) {
+                array_push($selects,$value);
+            }
+        }else{
+            $selects = '*';
+        }
+        $query->select($selects);
 
         if($this->relationTables != ""){
             $query = $this->relationTables($query);
@@ -84,29 +96,37 @@ class SearchBar extends Component
         if($this->sort != ""){
             $query = $this->sort($query);
         }
-
         if ($this->searchable && $this->search) {
             $this->search($query);
         }
-
         return $query->paginate($this->paginate);
     }
     #PRICIPAL FUNCTIONS
-    public function search($query){
-        $searchTerms = explode(',', $this->searchable);
-            $query->where(function ($innerQuery) use ($searchTerms) {
-                if ($this->customSearch) {
-                    $fields = explode('|', $this->customSearch);
-                    foreach ($fields as $field) {
-                        $search = array($field=>$this->search);
-                        $innerQuery->filterFields($search);
+        public function search($query){
+            $searchTerms = explode(',', $this->searchable);
+                $query->where(function ($innerQuery) use ($searchTerms) {
+                    foreach ($searchTerms as $term) {
+                        if ($this->customSearch) {
+                            $fields = explode('|', $this->customSearch);
+                            if(in_array($term,$fields)){
+                                $search = array($term=>$this->search);
+                                $formattedSearch = $this->model::filterFields($search);
+                                if($formattedSearch['converted'] != '%0%'){
+                                    $innerQuery->orWhere($term, $formattedSearch['f'], $formattedSearch['converted']);
+                                }else{
+                                    $innerQuery->orWhere($term, 'LIKE', '%' . $this->search . '%');
+                                }
+                            }else{
+                                $innerQuery->orWhere($term, 'LIKE', '%' . $this->search . '%');
+                            }
+                        }else{
+                            $innerQuery->orWhere($term, 'LIKE', '%' . $this->search . '%');
+                        }
                     }
-                }
-                foreach ($searchTerms as $term) {
-                    $innerQuery->orWhere($term, 'like', '%' . $this->search . '%');
-                }
-            });
-    }
+                });
+                // dd($query);
+        }
+    #END PRICIPAL FUNCTIONS
     #EXTRA FUNCTIONS
         //SORT
         public function sort($query)
