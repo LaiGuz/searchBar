@@ -95,6 +95,15 @@
                                                         {{ $value }}
                                                     </td>
                                                 @endif
+                                            @elseif($key == $activeButton)
+                                                <td
+                                                    class="w-1/6 py-1.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
+                                                    <livewire:search-bar.toggle-button
+                                                        :model="$data"
+                                                        field="{{$activeButton}}"
+                                                        key="{{$data->id}}"
+                                                        width="sm" />
+                                                </td>
                                             @else
                                                 <td
                                                     class="py-1.5 px-4 text-sm font-normal  text-center text-gray-500 dark:text-gray-400">
@@ -102,9 +111,10 @@
                                                 </td>
                                             @endif
                                         @endforeach
+
                                         @if ($showButtons)
                                             <td
-                                                class="py-1.5 px-4 text-sm font-normal  text-center text-gray-500 dark:text-gray-400">
+                                                class="w-1/6 py-1.5 px-4 text-sm font-normal text-center text-gray-500 dark:text-gray-400">
                                                 @livewire('search-bar.actions-buttons', ['search_id' => $data->id], key($data->id))
                                             </td>
                                         @endif
