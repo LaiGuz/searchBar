@@ -23,6 +23,7 @@ class SearchBar extends Component
     public $columnsNames;
     public $customSearch;
     public $showButtons;
+    public $activeButton;
 
     public $paginate;
 
@@ -44,6 +45,7 @@ class SearchBar extends Component
                         $columnsNames,
                         $searchable,
                         $customSearch,
+                        $activeButton,
                         $showButtons
                     )
     {
@@ -62,8 +64,12 @@ class SearchBar extends Component
         $this->searchable = $searchable;
         $this->customSearch = $customSearch;
         $this->showButtons = $showButtons;
+        $this->activeButton = $activeButton;
         ($paginate != null ? $this->paginate = $paginate : $this->paginate = 10);
 
+        if ($this->activeButton) {
+            array_push($this->columnsNames,'Status');
+        }
         array_push($this->columnsNames, $this->showButtons);
     }
 
@@ -78,7 +84,6 @@ class SearchBar extends Component
 
     private function getData()
     {
-
         $query = $this->model::query();
         $selects = array($this->modelId.' as id');
         if($this->columnsInclude){
@@ -87,6 +92,9 @@ class SearchBar extends Component
             }
         }else{
             $selects = '*';
+        }
+        if ($this->activeButton) {
+            array_push($selects,$this->activeButton);
         }
         $query->select($selects);
 
