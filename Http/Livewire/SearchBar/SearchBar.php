@@ -25,6 +25,7 @@ class SearchBar extends Component
     public $showButtons;
     public $activeButton;
     public $extraButtons;
+    public $foreingKey;
 
     public $paginate;
 
@@ -48,18 +49,22 @@ class SearchBar extends Component
                         $customSearch,
                         $activeButton,
                         $showButtons,
-                        $extraButtons
+                        $extraButtons,
+                        $foreingKey
                     )
     {
         $this->model = $model;
         $this->modelId = $modelId;
         $this->showId = strtolower(trim($showId));
+
         if(isset($relationTables)){
             $this->relationTables = $relationTables;
         }
         if(isset($sort)){
             $this->sort = $sort;
         }
+
+        $this->foreingKey = $foreingKey;
 
         $this->columnsInclude = $columnsInclude;
         $this->columnsNames = explode(',', $columnsNames);
@@ -91,6 +96,10 @@ class SearchBar extends Component
     private function getData()
     {
         $query = $this->model::query();
+        if($this->foreingKey){
+            $fk = explode(',',$this->foreingKey);
+            $query->where($fk[0],$fk[1]);
+        }
         $selects = array($this->modelId.' as id');
         if($this->columnsInclude){
             foreach (explode(',', $this->columnsInclude) as $key => $value) {
@@ -118,6 +127,7 @@ class SearchBar extends Component
     #PRICIPAL FUNCTIONS
         public function search($query){
             $searchTerms = explode(',', $this->searchable);
+
                 $query->where(function ($innerQuery) use ($searchTerms) {
                     foreach ($searchTerms as $term) {
                         if ($this->customSearch) {
