@@ -17,6 +17,7 @@ Barra de pesquisa
             {{-- OK --}} sort="times.day , asc | times.record , asc" {{-- Ordenação da tabela --}}
             {{-- OK --}} paginate="15" {{-- Qtd de registros por página --}}
             {{-- OK --}} extraButtons="contestDiscipline.list,slug,Disciplinas" {{-- route,id,model --}}
+            {{-- OK --}} foreingKey=""
         />
 
 
