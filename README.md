@@ -2,7 +2,7 @@
 Barra de pesquisa
 
 ## Componente de configuração
-    <div class="bg-white shadow-md dark:bg-gray-800 pt-3 sm:rounded-lg">
+
         <livewire:search-bar.search-bar
             {{-- REQUIRED --}}  model="App\Models\Model\Times" {{-- Model principal --}}
             {{-- REQUIRED --}}  modelId="times.id" {{-- Ex: 'table.id' or 'id' --}}
@@ -18,7 +18,7 @@ Barra de pesquisa
             {{-- OK --}} paginate="15" {{-- Qtd de registros por página --}}
             {{-- OK --}} extraButtons="contestDiscipline.list,slug,Disciplinas" {{-- route,id,model --}}
         />
-    </div>
+
 
 ## Exemplo de conversão no model (apresentação na tabela) 
     public function getRecordAttribute($value)
