@@ -24,6 +24,7 @@ class SearchBar extends Component
     public $customSearch;
     public $showButtons;
     public $activeButton;
+    public $extraButtons;
 
     public $paginate;
 
@@ -46,7 +47,8 @@ class SearchBar extends Component
                         $searchable,
                         $customSearch,
                         $activeButton,
-                        $showButtons
+                        $showButtons,
+                        $extraButtons
                     )
     {
         $this->model = $model;
@@ -69,6 +71,10 @@ class SearchBar extends Component
 
         if ($this->activeButton) {
             array_push($this->columnsNames,'Status');
+        }
+        if ($this->extraButtons) {
+            array_push($this->columnsNames,'Extras');
+            $this->extraButtons($extraButtons);
         }
         array_push($this->columnsNames, $this->showButtons);
     }
@@ -196,6 +202,26 @@ class SearchBar extends Component
         public function closeAlert()
         {
             $this->alertSession = false;
+        }
+        public function extraButtons($buttons)
+        {
+            // if ($buttons) {
+            //     $buttons = str_replace(' ', '', $buttons);
+            //     $buttonsData = explode('|', $buttons);
+            //     $c = count($buttonsData);
+            //     for ($i=0; $i < $c; $i++) {
+            //         $s = explode(',', $buttonsData[$i]);
+            //         if (count($s) === 3) {
+            //             $b[]=[
+            //                 'route' =>$s[0],
+            //                 'id'    =>$s[1],
+            //                 'title' =>$s[2],
+            //             ];
+            //         }
+            //         $this->buttons = $b;
+            //     }
+            // }
+            $this->extraButtons = $buttons;
         }
     #END FUNCTIONS BUTTONS AND MESSAGE
 }
